@@ -5,16 +5,29 @@ frontend/coverage/
 frontend/playwright-report/
 frontend/test-results/
 
-# Backend
+# Backend / Maven
 backend/target/
-
-# Environment
-.env
-*.env
+target/
+*.class
+*.jar
+*.war
+*.ear
 
 # IDE
-.vscode/
 .idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+
+# Playwright
+playwright-report/
+test-results/
 
 # OS
 .DS_Store
