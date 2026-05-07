@@ -18,7 +18,7 @@ function emptyCart() {
   };
 }
 
-export default function CartComponent({ userId = 'user01' }) {
+export default function CartComponent({ userId = 'user01', onCheckout }) {
   const [selectedProductId, setSelectedProductId] = useState('P001');
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState(emptyCart());
@@ -190,7 +190,19 @@ export default function CartComponent({ userId = 'user01' }) {
       <div className="card">
         <div className="table-header">
           <h2>Danh sach san pham trong gio</h2>
-          <strong data-testid="cart-total">{formatCurrency(cart?.cartTotal || 0)}</strong>
+          <div className="cart-actions">
+            <strong data-testid="cart-total">{formatCurrency(cart?.cartTotal || 0)}</strong>
+            {cartItems.length > 0 && onCheckout && (
+              <button
+                type="button"
+                className="primary-btn"
+                data-testid="checkout-link"
+                onClick={onCheckout}
+              >
+                Chuyen sang checkout
+              </button>
+            )}
+          </div>
         </div>
 
         {cartItems.length === 0 ? (
