@@ -33,7 +33,7 @@ jobs:
       - name: Run backend tests
         run: |
           cd backend
-          mvn -B clean test
+          mvn -B clean test jacoco:report
 
       - name: Upload backend test reports
         if: always()
