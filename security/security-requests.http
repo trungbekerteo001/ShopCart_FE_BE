@@ -1,0 +1,99 @@
+@baseUrl = http://localhost:8080
+@user01 = user01
+@user02 = user02
+
+### TC_SEC_001 - SQL Injection payload at Cart productId
+POST {{baseUrl}}/api/cart/add
+X-USER-ID: {{user01}}
+Content-Type: application/json
+
+{
+  "productId": "P001' OR '1'='1",
+  "quantity": 1
+}
+
+### TC_SEC_002 - SQL Injection payload at Order ID
+GET {{baseUrl}}/api/orders/ORD-001%27%20OR%20%271%27%3D%271
+
+### Prepare data - Create cart for user01
+POST {{baseUrl}}/api/cart/add
+X-USER-ID: {{user01}}
+Content-Type: application/json
+
+{
+  "productId": "P001",
+  "quantity": 1
+}
+
+### TC_SEC_004A - Read cart as user01
+GET {{baseUrl}}/api/cart
+X-USER-ID: {{user01}}
+
+### TC_SEC_004B - IDOR check: read cart after changing X-USER-ID manually
+GET {{baseUrl}}/api/cart
+X-USER-ID: {{user02}}
+
+### TC_SEC_005 - Missing Authorization: create order without Authorization and without X-USER-ID
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": "P002",
+      "quantity": 1
+    }
+  ],
+  "couponCode": "SALE10",
+  "shippingFee": 50000,
+  "shippingAddress": "No auth address",
+  "paymentMethod": "COD"
+}
+
+### TC_SEC_003 - XSS payload in shippingAddress
+POST {{baseUrl}}/api/orders
+X-USER-ID: {{user01}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productId": "P002",
+      "quantity": 1
+    }
+  ],
+  "couponCode": "SALE10",
+  "shippingFee": 50000,
+  "shippingAddress": "<script>alert('xss')</script>",
+  "paymentMethod": "COD"
+}
+
+### TC_SEC_006 - CSRF/CORS simulation with unexpected Origin
+POST {{baseUrl}}/api/cart/add
+Origin: http://evil.localhost
+Content-Type: application/json
+
+{
+  "productId": "P001",
+  "quantity": 1
+}
+
+### TC_SEC_007A - Input validation: negative quantity
+POST {{baseUrl}}/api/cart/add
+X-USER-ID: {{user01}}
+Content-Type: application/json
+
+{
+  "productId": "P001",
+  "quantity": -1
+}
+
+### TC_SEC_007B - Input validation: quantity exceeds stock
+POST {{baseUrl}}/api/cart/add
+X-USER-ID: {{user01}}
+Content-Type: application/json
+
+{
+  "productId": "P001",
+  "quantity": 999999999
+}
