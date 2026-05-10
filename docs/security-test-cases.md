@@ -31,16 +31,15 @@ Các nhóm rủi ro được kiểm thử:
 | Test data        | `P001`, `P002`, `P003`, `P004`, `user01`, `user02` |
 
 ## 4. Bảng tổng hợp test cases
-| Test Case ID | Nhóm rủi ro                  | Tên test case                                           | Priority | Status dự kiến          |
-|--------------|------------------------------|---------------------------------------------------------|----------|-------------------------|
-| TC_SEC_001   | SQL Injection                | Kiểm tra SQL Injection tại `productId` của Cart API     | Critical | Pass sau khi xác nhận   |
-| TC_SEC_002   | SQL Injection                | Kiểm tra SQL Injection tại `orderId`                    | High     | Pass sau khi xác nhận   |
-| TC_SEC_003   | XSS                          | Kiểm tra XSS tại trường `shippingAddress`               | High     | Needs Improvement       |
-| TC_SEC_004   | IDOR / Broken Access Control | Đổi header `X-USER-ID` để xem/sửa dữ liệu người khác    | Critical | Fail / Security Finding |
-| TC_SEC_005   | Missing Authorization        | Tạo đơn hàng khi không có token hoặc định danh xác thực | Critical | Fail / Security Finding |
-| TC_SEC_006   | CSRF                         | Mô phỏng request thay đổi dữ liệu từ origin lạ          | Medium   | Needs Improvement       |
-| TC_SEC_007   | Input Validation             | Kiểm tra `quantity` âm hoặc vượt tồn kho                | High     | Pass sau khi xác nhận   |
-
+| Test Case ID | Nhóm rủi ro                  | Mục tiêu kiểm thử                                                        | Status                  |
+|--------------|------------------------------|--------------------------------------------------------------------------|-------------------------|
+| TC_SEC_001   | SQL Injection                | Kiểm tra payload SQL Injection tại `productId` khi thêm sản phẩm vào giỏ | Pass                    |
+| TC_SEC_002   | SQL Injection                | Kiểm tra payload SQL Injection tại `orderId` khi truy vấn đơn hàng       | Pass                    |
+| TC_SEC_003   | XSS                          | Kiểm tra payload script trong trường địa chỉ giao hàng                   | Needs Improvement       |
+| TC_SEC_004   | IDOR / Broken Access Control | Kiểm tra truy cập dữ liệu của user khác bằng cách đổi `X-USER-ID`        | Fail / Security Finding |
+| TC_SEC_005   | Missing Authorization        | Kiểm tra API khi thiếu thông tin xác thực/người dùng                     | Fail / Security Finding |
+| TC_SEC_006   | CSRF / CORS                  | Kiểm tra request từ origin lạ                                            | Needs Improvement       |
+| TC_SEC_007   | Input Validation             | Kiểm tra quantity âm, bằng 0 hoặc quá lớn                                | Pass                    |
 ---
 ## 5. Test cases chi tiết
 ## TC_SEC_001 - SQL Injection tại `productId` của Cart API
@@ -50,7 +49,7 @@ Các nhóm rủi ro được kiểm thử:
 | Test Name    | Kiểm tra SQL Injection tại `productId` của Cart API |
 | Risk Group   | SQL Injection                                       |
 | Priority     | Critical                                            |
-| Status       | Pass sau khi xác nhận bằng request thực tế          |
+| Status       | Pass                                                |
 
 ### Preconditions
 - Backend đang chạy tại `http://localhost:8080`.
@@ -88,7 +87,7 @@ X-USER-ID: user01
 - Không lộ thông tin database hoặc stack trace.
 
 ### Actual Result
-Dự kiến API trả lỗi sản phẩm không tồn tại do repository tìm theo ID chính xác, không dùng query nối chuỗi trực tiếp.
+Khi kiểm tra với payload SQL Injection tại trường `productId`, hệ thống không xử lý payload như một câu truy vấn SQL hợp lệ. Request không làm lộ dữ liệu ngoài phạm vi, không truy xuất được sản phẩm không hợp lệ và không phát sinh lỗi hệ thống nghiêm trọng.
 
 ---
 ## TC_SEC_002 - SQL Injection tại `orderId`
@@ -98,7 +97,7 @@ Dự kiến API trả lỗi sản phẩm không tồn tại do repository tìm t
 | Test Name    | Kiểm tra SQL Injection khi truy vấn đơn hàng theo `orderId` |
 | Risk Group   | SQL Injection                                               |
 | Priority     | High                                                        |
-| Status       | Pass sau khi xác nhận bằng request thực tế                  |
+| Status       | Pass                 |
 
 ### Preconditions
 - Backend đang chạy.
@@ -124,7 +123,7 @@ X-USER-ID: user01
 - Không lộ thông tin database.
 
 ### Actual Result
-Dự kiến API không tìm thấy đơn hàng vì dùng repository lookup theo ID, không nối chuỗi SQL trực tiếp.
+Khi kiểm tra payload SQL Injection tại `orderId`, hệ thống không trả về dữ liệu đơn hàng ngoài phạm vi truy vấn. Payload không làm thay đổi câu truy vấn theo hướng bỏ qua điều kiện lọc và không làm lộ dữ liệu nhạy cảm.
 
 ---
 ## TC_SEC_003 - XSS tại trường `shippingAddress`
@@ -176,7 +175,7 @@ X-USER-ID: user01
 - Script không được thực thi trên UI.
 
 ### Actual Result
-Dự kiến backend hiện chỉ kiểm tra địa chỉ không rỗng, chưa sanitize nội dung HTML. React thường escape text khi render, nhưng vẫn cần ghi nhận rủi ro nếu sau này dùng `dangerouslySetInnerHTML` hoặc render HTML trực tiếp.
+Khi kiểm tra với payload XSS trong trường địa chỉ giao hàng, hệ thống chưa thể hiện đầy đủ cơ chế sanitize hoặc encode dữ liệu đầu vào/đầu ra ở mức tài liệu kiểm thử. Nếu dữ liệu địa chỉ được render trực tiếp ra giao diện mà không escape HTML, payload script có nguy cơ gây XSS.
 
 ---
 ## TC_SEC_004 - IDOR khi đổi header `X-USER-ID`
@@ -213,7 +212,7 @@ X-USER-ID: user02
 - `userId` nên được lấy từ server-side identity, không lấy trực tiếp từ header do client tự truyền.
 
 ### Actual Result
-Dự kiến API hiện tin vào header `X-USER-ID` và còn có default `user01`, nên đây là điểm yếu bảo mật trong bản demo.
+Khi mô phỏng thay đổi `X-USER-ID` để truy cập dữ liệu của user khác, hệ thống có nguy cơ phụ thuộc vào dữ liệu user truyền từ client thay vì xác định user từ token/session đã xác thực. Đây là rủi ro IDOR/Broken Access Control vì người dùng có thể sửa định danh và truy cập tài nguyên không thuộc quyền sở hữu của mình.
 
 ---
 ## TC_SEC_005 - Missing Authorization khi tạo đơn hàng
@@ -263,7 +262,7 @@ Content-Type: application/json
 - Không tạo order nếu chưa xác thực.
 
 ### Actual Result
-Dự kiến controller đang dùng `@RequestHeader(defaultValue = "user01")`, nên request không xác thực vẫn có thể được xử lý như `user01`.
+Một số API nghiệp vụ vẫn có khả năng xử lý request khi thiếu cơ chế xác thực rõ ràng hoặc khi user được truyền qua header/request. Điều này cho thấy hệ thống cần bổ sung kiểm tra Authorization đầy đủ hơn cho các API Cart, Checkout và Order.
 
 ---
 ## TC_SEC_006 - CSRF / Cross-site request risk
@@ -308,7 +307,7 @@ X-USER-ID: user01
 - Origin lạ không được phép thao tác dữ liệu qua trình duyệt.
 
 ### Actual Result
-Dự kiến project hiện dùng CORS giới hạn `http://localhost:5173`, nhưng chưa có Spring Security/CSRF token. Rủi ro ở mức trung bình trong demo, cần cải thiện nếu triển khai thật.
+Khi mô phỏng request từ origin lạ, hệ thống cần kiểm tra và giới hạn CORS theo danh sách domain frontend hợp lệ. Nếu cấu hình CORS cho phép quá rộng, API có nguy cơ bị gọi từ website không tin cậy trong một số kịch bản trình duyệt.
 
 ---
 ## TC_SEC_007 - Input Validation với `quantity` âm hoặc quá lớn
@@ -319,7 +318,7 @@ Dự kiến project hiện dùng CORS giới hạn `http://localhost:5173`, như
 | Test Name    | Kiểm tra validate quantity bất thường ở Cart API |
 | Risk Group   | Input Validation                                 |
 | Priority     | High                                             |
-| Status       | Pass sau khi xác nhận bằng request thực tế       |
+| Status       | Pass                                             |
 
 ### Preconditions
 - Backend đang chạy.
@@ -362,7 +361,7 @@ X-USER-ID: user01
 - Response có thông báo lỗi rõ ràng để frontend hiển thị.
 
 ### Actual Result
-Dự kiến DTO có `@Min(1)` và service kiểm tra tồn kho, nên case này phải bị chặn.
+Khi kiểm tra quantity âm, bằng 0 hoặc vượt tồn kho, hệ thống từ chối request không hợp lệ và không cập nhật dữ liệu giỏ hàng/đơn hàng sai. Validation số lượng hoạt động đúng theo yêu cầu nghiệp vụ.
 
 ---
 

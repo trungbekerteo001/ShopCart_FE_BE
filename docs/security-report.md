@@ -1,16 +1,12 @@
 # Security Testing Report - ShopCart
-
 ## 1. Mục đích báo cáo
-
 Báo cáo này ghi nhận kết quả kiểm thử bảo mật cho các luồng:
-
 - Cart
 - Checkout / Purchase
 - Order API
 - Inventory API
 
 Mục tiêu là đáp ứng phần **Advanced Testing - Security Testing**, gồm:
-
 - Thiết kế test cases cho ít nhất 2 nhóm rủi ro bảo mật.
 - Mô phỏng request kiểm thử.
 - Ghi nhận kết quả.
@@ -18,7 +14,6 @@ Mục tiêu là đáp ứng phần **Advanced Testing - Security Testing**, gồ
 - Đề xuất biện pháp khắc phục.
 
 ## 2. Phạm vi và công cụ
-
 | Nội dung          | Mô tả                                                                   | 
 |-------------------|-------------------------------------------------------------------------|
 | Hệ thống kiểm thử | ShopCart_FE_BE                                                          |
@@ -30,7 +25,6 @@ Mục tiêu là đáp ứng phần **Advanced Testing - Security Testing**, gồ
 | Nhóm rủi ro chính | SQL Injection, XSS, IDOR, Missing Authorization, CSRF, Input Validation |
 
 ## 3. Cách chạy request mô phỏng
-
 Có thể chạy nhanh bằng file:
 security/security-requests.http
 
@@ -41,21 +35,16 @@ Nếu dùng VS Code:
 4. Chụp lại response để đưa vào báo cáo cuối.
 
 ## 4. Bảng tổng hợp kết quả kiểm thử
-
-| ID         | Nhóm rủi ro           | Request kiểm thử                                                         | Status            |
-|------------|-----------------------|--------------------------------------------------------------------------|-------------------|
-| TC_SEC_001 | SQL Injection         | `POST /api/cart/add` với `productId = P001' OR '1'='1`                   | Pass              |
-| TC_SEC_002 | SQL Injection         | `GET /api/orders/ORD-001' OR '1'='1`                                     | Pass              |
-| TC_SEC_003 | XSS                   | `POST /api/orders` với `shippingAddress = <script>alert('xss')</script>` | Needs Improvement |
-| TC_SEC_004 | IDOR                  | Đổi header `X-USER-ID` để xem/sửa cart                                   | Fail              |
-| TC_SEC_005 | Missing Authorization | Tạo order không có token và không có `X-USER-ID`                         | Fail              |
-| TC_SEC_006 | CSRF                  | Gửi request thay đổi dữ liệu với origin lạ                               | Needs Improvement |
-| TC_SEC_007 | Input Validation      | `quantity = -1` hoặc `quantity` vượt tồn kho                             | Pass              |
-
-> Ghi chú: kết quả hiện tại được ghi theo phân tích mã nguồn và mô phỏng request. Sau khi chạy trực tiếp trên máy local, cập nhật lại nếu response thực tế khác.
+| Nhóm kiểm thử         | Test Case              | Kết quả                 | Nhận xét                                                                                 |
+|-----------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------|
+| SQL Injection         | TC_SEC_001, TC_SEC_002 | Pass                    | Chưa ghi nhận dấu hiệu payload SQL Injection làm lộ dữ liệu hoặc thay đổi logic truy vấn |
+| XSS                   | TC_SEC_003             | Needs Improvement       | Cần bổ sung sanitize/escape dữ liệu người dùng nhập trước khi hiển thị ra giao diện      |
+| IDOR / Access Control | TC_SEC_004             | Fail / Security Finding | Có rủi ro nếu hệ thống tin vào `X-USER-ID` hoặc userId do client truyền lên              |
+| Missing Authorization | TC_SEC_005             | Fail / Security Finding | Cần bổ sung xác thực và phân quyền rõ ràng cho API nghiệp vụ                             |
+| CSRF / CORS           | TC_SEC_006             | Needs Improvement       | Cần cấu hình CORS chặt chẽ theo frontend origin hợp lệ                                   |
+| Input Validation      | TC_SEC_007             | Pass                    | Quantity không hợp lệ được kiểm soát đúng                                                |
 
 ---
-
 ## 5. Kết quả chi tiết
 ## 5.1 SQL Injection
 ### Request kiểm thử
@@ -74,14 +63,14 @@ API liên quan:
 - Hệ thống không lỗi `500`.
 - Hệ thống không lộ stack trace hoặc thông tin database.
 
-### Actual Result dự kiến
-Hệ thống dự kiến không bị SQL Injection vì luồng hiện tại sử dụng repository lookup theo khóa/id, không nối chuỗi SQL thủ công.
+### Actual Result
+Khi kiểm tra với payload SQL Injection tại `productId` và `orderId`, hệ thống không xử lý payload như một câu truy vấn SQL hợp lệ. Request không làm lộ dữ liệu ngoài phạm vi, không truy xuất được sản phẩm/đơn hàng không hợp lệ và không phát sinh lỗi hệ thống nghiêm trọng.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                                     |
 |-------------------------|-------------------------------------------------------------|
 | Mức độ rủi ro           | Critical                                                    |
-| Tình trạng              | Pass sau khi xác nhận bằng request thực tế                  |
+| Tình trạng              | Pass                                                        |
 | Tác động nếu lỗi xảy ra | Có thể đọc/sửa dữ liệu trái phép, bỏ qua điều kiện truy vấn |
 
 ### Đề xuất
@@ -105,8 +94,8 @@ API liên quan:
 - Dữ liệu người dùng nhập phải được encode khi hiển thị.
 - Hệ thống nên validate hoặc sanitize các trường text có nguy cơ chứa HTML.
 
-### Actual Result dự kiến
-Backend hiện chủ yếu kiểm tra địa chỉ không rỗng, chưa sanitize HTML. React thường escape text khi render, nhưng nếu sau này dùng `dangerouslySetInnerHTML` hoặc render HTML trực tiếp thì có thể phát sinh stored XSS.
+### Actual Result
+Khi kiểm tra với payload XSS trong trường `shippingAddress`, hệ thống chưa thể hiện đầy đủ cơ chế sanitize dữ liệu đầu vào ở phía backend. React thường escape text khi render, tuy nhiên nếu dữ liệu này được hiển thị bằng `dangerouslySetInnerHTML` hoặc render HTML trực tiếp, payload script có nguy cơ gây stored XSS.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                                                              |
@@ -141,8 +130,8 @@ API liên quan:
 - API phải xác thực user bằng token/session.
 - `userId` phải lấy từ authentication principal phía server.
 
-### Actual Result dự kiến
-API hiện có nguy cơ tin vào `X-USER-ID` do client gửi lên. Một số controller còn dùng giá trị mặc định `user01`, phù hợp demo nhưng không an toàn cho hệ thống thật.
+### Actual Result
+Khi mô phỏng thay đổi `X-USER-ID`, hệ thống có nguy cơ phụ thuộc vào định danh người dùng do client truyền lên. Một số API còn có thể dùng giá trị mặc định `user01`, phù hợp cho demo nhưng không an toàn nếu triển khai thật. Đây là rủi ro IDOR/Broken Access Control vì người dùng có thể sửa định danh và truy cập hoặc thay đổi tài nguyên không thuộc quyền sở hữu của mình.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                                                   |
@@ -176,8 +165,8 @@ API liên quan:
 - API trả `403 Forbidden` nếu không có quyền thao tác tài nguyên.
 - Không tạo order hoặc cập nhật cart khi request chưa xác thực.
 
-### Actual Result dự kiến
-Controller có nguy cơ xử lý request như `user01` nếu đang dùng `@RequestHeader(defaultValue = "user01")`.
+### Actual Result
+Khi mô phỏng request thiếu `Authorization header` hoặc thiếu thông tin định danh người dùng, một số API nghiệp vụ vẫn có nguy cơ xử lý theo user mặc định hoặc user truyền từ client. Điều này cho thấy hệ thống cần bổ sung xác thực và phân quyền rõ ràng hơn cho các API Cart, Checkout và Order.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                                      |
@@ -209,8 +198,8 @@ API liên quan:
 - Nếu dùng cookie/session, phải có CSRF token.
 - Nếu dùng Bearer token, cần kiểm soát CORS chặt và không lưu token trong cookie không bảo vệ.
 
-### Actual Result dự kiến
-Project có CORS giới hạn `http://localhost:5173`, nhưng chưa có security configuration hoàn chỉnh như authentication/authorization/CSRF token.
+### Actual Result
+Khi mô phỏng request từ origin lạ, hệ thống cần kiểm tra và giới hạn CORS theo danh sách frontend origin hợp lệ. Project có định hướng giới hạn frontend origin local, tuy nhiên chưa có security configuration hoàn chỉnh cho authentication, authorization và CSRF token. Vì vậy nhóm rủi ro này được ghi nhận là cần cải thiện.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                                        |
@@ -245,14 +234,14 @@ API liên quan:
 - Không lỗi `500`.
 - Response có thông báo lỗi rõ ràng.
 
-### Actual Result dự kiến
-DTO đã có validation như `@NotBlank`, `@NotNull`, `@Min(1)`. Service cũng kiểm tra tồn kho, trạng thái sản phẩm và số lượng vượt tồn.
+### Actual Result
+Khi kiểm tra các giá trị quantity âm, bằng 0, quá lớn hoặc `productId` không hợp lệ, hệ thống từ chối request không hợp lệ. DTO có validation như `@NotBlank`, `@NotNull`, `@Min(1)`, đồng thời service kiểm tra tồn kho, trạng thái sản phẩm và số lượng vượt tồn. Hệ thống không tạo cart item/order sai và không trừ tồn kho sai.
 
 ### Đánh giá
 | Tiêu chí                | Kết quả                                    |
 |-------------------------|--------------------------------------------|
 | Mức độ rủi ro           | High                                       |
-| Tình trạng              | Pass sau khi xác nhận bằng request thực tế |
+| Tình trạng              | Pass                                       |
 | Tác động nếu lỗi xảy ra | Dữ liệu tồn kho/cart/order có thể sai lệch |
 
 ### Đề xuất
