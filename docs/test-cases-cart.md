@@ -33,13 +33,13 @@ Giải thích ưu tiên:
 ---
 ## 3. Test cases chi tiết
 ### TC_CART_001 - Thêm sản phẩm vào giỏ hàng thành công
-| Trường        | Nội dung                                     |
-|---------------|----------------------------------------------|
-| Test Case ID  | TC_CART_001                                  |
-| Test Name     | Thêm sản phẩm hợp lệ vào giỏ hàng thành công |
-| Priority      | Critical                                     |
-| Actual Result | Để trống - điền sau khi chạy test thực tế    |
-| Status        | Not Run                                      |
+| Trường        | Nội dung                                                                                                                                                      |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_CART_001                                                                                                                                                   |
+| Test Name     | Thêm sản phẩm hợp lệ vào giỏ hàng thành công                                                                                                                  |
+| Priority      | Critical                                                                                                                                                      |
+| Actual Result | Hệ thống thêm sản phẩm `P001 - Laptop Dell` vào giỏ hàng thành công với số lượng `2`. API trả kết quả thành công, giỏ hàng hiển thị đúng sản phẩm, số lượng và tổng tiền tương ứng.                                                                                                                                                            |
+| Status        | Pass                                                                                                                                                          |
  
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -75,13 +75,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_CART_002 - Không cho thêm sản phẩm vượt quá tồn kho
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_CART_002                               |
-| Test Name     | Thêm sản phẩm với số lượng vượt tồn kho   |
-| Priority      | Critical                                  |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                                      |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_CART_002                                                                                                                                                   |
+| Test Name     | Thêm sản phẩm với số lượng vượt tồn kho                                                                                                                       |
+| Priority      | Critical                                                                                                                                                      |
+| Actual Result | Khi nhập số lượng lớn hơn tồn kho hiện tại, hệ thống không cho thêm sản phẩm vào giỏ hàng. Thông báo lỗi validation được hiển thị và dữ liệu giỏ hàng không bị thay đổi.                                                                                                                                                                       |
+| Status        | Pass                                                                                                                                                          |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -113,13 +113,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_CART_003 - Không cho thêm sản phẩm hết hàng
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_CART_003                               |
-| Test Name     | Thêm sản phẩm hết hàng vào giỏ            |
-| Priority      | High                                      |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                                 |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_CART_003                                                                                                                                              |
+| Test Name     | Thêm sản phẩm hết hàng vào giỏ                                                                                                                           |
+| Priority      | High                                                                                                                                                     |
+| Actual Result | Khi thêm sản phẩm hết hàng, hệ thống từ chối thao tác thêm vào giỏ. Không có cart item mới được tạo và hệ thống trả về thông báo lỗi phù hợp về tồn kho. |
+| Status        | Pass                                                                                                                                                     |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -151,13 +151,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_CART_004 - Xóa sản phẩm khỏi giỏ hàng thành công
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_CART_004                               |
-| Test Name     | Xóa sản phẩm đang có trong giỏ hàng       |
-| Priority      | High                                      |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                              |
+|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_CART_004                                                                                                                                           |
+| Test Name     | Xóa sản phẩm đang có trong giỏ hàng                                                                                                                   |
+| Priority      | High                                                                                                                                                  |
+| Actual Result | Hệ thống xóa sản phẩm khỏi giỏ hàng thành công. Sau khi xóa, sản phẩm không còn hiển thị trong danh sách giỏ hàng và tổng tiền được cập nhật lại đúng |
+| Status        | Pass                                                                                                                                                  |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -189,13 +189,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_CART_005 - Cập nhật số lượng sản phẩm trong giỏ hàng thành công
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_CART_005                               |
-| Test Name     | Cập nhật số lượng sản phẩm trong giỏ hàng |
-| Priority      | High                                      |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                    |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_CART_005                                                                                                                                 |
+| Test Name     | Cập nhật số lượng sản phẩm trong giỏ hàng                                                                                                   |
+| Priority      | High                                                                                                                                        |
+| Actual Result | Hệ thống cập nhật số lượng sản phẩm trong giỏ hàng thành công. Số lượng mới được lưu đúng, line total và cart total được tính lại chính xác |
+| Status        | Pass                                                                                                                                        |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.

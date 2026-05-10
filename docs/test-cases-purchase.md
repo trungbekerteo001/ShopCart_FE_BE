@@ -43,13 +43,13 @@ Giải thích ưu tiên:
 ---
 ## 3. Test cases chi tiết
 ### TC_PURCHASE_001 - Đặt hàng thành công và tồn kho được cập nhật
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_PURCHASE_001                           |
-| Test Name     | Đặt hàng thành công và cập nhật tồn kho   |
-| Priority      | Critical                                  |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                                      |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_PURCHASE_001                                                                                                                                               |
+| Test Name     | Đặt hàng thành công và cập nhật tồn kho                                                                                                                       |
+| Priority      | Critical                                                                                                                                                      |
+| Actual Result | Hệ thống tạo đơn hàng thành công với trạng thái `PENDING`. Tổng tiền được tính đúng theo subtotal, coupon và phí vận chuyển. Tồn kho các sản phẩm trong đơn hàng được cập nhật sau khi đặt hàng                                                                                                                                             |
+| Status        | Pass                                                                                                                                                          |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -98,13 +98,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_PURCHASE_002 - Không cho đặt hàng khi sản phẩm hết hàng
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_PURCHASE_002                           |
-| Test Name     | Đặt hàng thất bại khi sản phẩm hết hàng   |
-| Priority      | Critical                                  |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                           |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_PURCHASE_002                                                                                                                    |
+| Test Name     | Đặt hàng thất bại khi sản phẩm hết hàng                                                                                            |
+| Priority      | Critical                                                                                                                           |
+| Actual Result | Khi đặt hàng với sản phẩm hết hàng, hệ thống không tạo order mới. API/UI trả về thông báo lỗi phù hợp và tồn kho không bị thay đổi |
+| Status        | Pass                                                                                                                               |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -139,13 +139,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_PURCHASE_003 - Tính tổng tiền chính xác với coupon và phí vận chuyển
-| Trường        | Nội dung                                                 |
-|---------------|----------------------------------------------------------|
-| Test Case ID  | TC_PURCHASE_003                                          |
-| Test Name     | Kiểm tra tính toán subtotal, discount, shipping và total |
-| Priority      | Critical                                                 |
-| Actual Result | Để trống - điền sau khi chạy test thực tế                |
-| Status        | Not Run                                                  |
+| Trường        | Nội dung                                                                                                                          |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_PURCHASE_003                                                                                                                   |
+| Test Name     | Kiểm tra tính toán subtotal, discount, shipping và total                                                                          |
+| Priority      | Critical                                                                                                                          |
+| Actual Result | Hệ thống tính đúng subtotal, discount, shipping fee và total. Kết quả tính tiền trên giao diện/API khớp với công thức kiểm thử    |
+| Status        | Pass                                                                                                                              |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -183,13 +183,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_PURCHASE_004 - Không cho đặt hàng với mã giảm giá không hợp lệ
-| Trường        | Nội dung                                  |
-|---------------|-------------------------------------------|
-| Test Case ID  | TC_PURCHASE_004                           |
-| Test Name     | Checkout thất bại khi coupon không hợp lệ |
-| Priority      | High                                      |
-| Actual Result | Để trống - điền sau khi chạy test thực tế |
-| Status        | Not Run                                   |
+| Trường        | Nội dung                                                                                                                                                      |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_PURCHASE_004                                                                                                                                               |
+| Test Name     | Checkout thất bại khi coupon không hợp lệ                                                                                                                     |
+| Priority      | High                                                                                                                                                          |
+| Actual Result | Khi nhập mã giảm giá không hợp lệ hoặc hết hạn, hệ thống không áp dụng giảm giá sai. Thông báo lỗi coupon được hiển thị và người dùng có thể sửa lại mã giảm giá.                                                                                                                                                                            |
+| Status        | Pass                                                                                                                                                          |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
@@ -221,13 +221,13 @@ Giải thích ưu tiên:
 
 ---
 ### TC_PURCHASE_005 - Không cho đặt hàng khi số lượng vượt tồn kho tại thời điểm checkout
-| Trường        | Nội dung                                        |
-|---------------|-------------------------------------------------|
-| Test Case ID  | TC_PURCHASE_005                                 |
-| Test Name     | Checkout thất bại khi số lượng đặt vượt tồn kho |
-| Priority      | Critical                                        |
-| Actual Result | Để trống - điền sau khi chạy test thực tế       |
-| Status        | Not Run                                         |
+| Trường        | Nội dung                                                                                                                                                   |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Test Case ID  | TC_PURCHASE_005                                                                                                                                            |
+| Test Name     | Checkout thất bại khi số lượng đặt vượt tồn kho                                                                                                            |
+| Priority      | Critical                                                                                                                                                   |
+| Actual Result | Khi số lượng đặt hàng vượt quá tồn kho tại thời điểm checkout, hệ thống không tạo order. Tồn kho sản phẩm không bị trừ và giỏ hàng vẫn được giữ nguyên để người dùng điều chỉnh.                                                                                                                                                       |
+| Status        | Pass                                                                                                                                                       |
 
 **Preconditions**
 - Ứng dụng frontend và backend đang chạy.
