@@ -374,10 +374,3 @@ Khi kiểm tra quantity âm, bằng 0 hoặc vượt tồn kho, hệ thống t�
 | Missing Authorization        | Critical | Cart, Order      | Fail vì chưa có xác thực thật cho API nghiệp vụ                              |
 | CSRF                         | Medium   | Cart, Order      | Needs Improvement; CORS có giới hạn nhưng chưa có security config hoàn chỉnh |
 | Input Validation             | High     | Cart, Order      | Pass nếu validation và service business rules hoạt động đúng                 |
-
-## 7. Ghi chú cập nhật sau khi chạy thực tế
-Sau khi chạy file `security/security-requests.http`, cập nhật lại các mục:
-- Actual Result
-- Status
-- Ảnh minh chứng response thực tế
-- Nhận xét nếu response khác với dự kiến

@@ -259,17 +259,7 @@ Khi kiểm tra các giá trị quantity âm, bằng 0, quá lớn hoặc `produc
 | Medium      | CSRF chưa được thiết kế rõ nếu dùng cookie/session | Bật CSRF token hoặc dùng Bearer token đúng cách                           |
 | High        | Cần duy trì input validation ở DTO và service      | Thêm test cho boundary/negative cases                                     |
 
-## 7. Danh sách ảnh minh chứng cần chụp sau khi chạy
-Để đưa vào báo cáo cuối, nên chụp một lần sau khi hoàn tất toàn bộ phần còn thiếu:
-
-1. Ảnh chạy request SQL Injection và response không lỗi `500`.
-2. Ảnh request XSS ở `shippingAddress` và response thực tế.
-3. Ảnh request đổi `X-USER-ID` để minh chứng rủi ro IDOR hoặc kết quả kiểm tra access control.
-4. Ảnh request tạo order không token/không `X-USER-ID`.
-5. Ảnh file `docs/security-test-cases.md` và `docs/security-report.md` trong repository.
-6. Ảnh GitHub commit/push nếu cần minh chứng đã bổ sung tài liệu security testing.
-
-## 8. Kết luận
+## 7. Kết luận
 Phần kiểm thử bảo mật đã bao phủ các nhóm rủi ro quan trọng gồm SQL Injection, XSS, IDOR, Missing Authorization, CSRF và Input Validation.
 
 Kết quả phân tích cho thấy các validation nghiệp vụ cơ bản đã có. Tuy nhiên, hệ thống còn điểm yếu lớn ở xác thực và phân quyền do đang dùng `X-USER-ID` từ client và có giá trị mặc định `user01`.
